@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#Reference: http://phyquar.hatenablog.com/entry/2017/07/26/220032
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_mldata
@@ -77,7 +78,7 @@ class Alex(Chain):
 
 class DeepLearningClassifier:
 	def __init__(self):
-		model = Alex()
+		model = Alex() #モデル選択、MLP,Alex,Lenetで切り替え可能
 		self.model = L.Classifier(model)
 		self.opt = optimizers.Adam()
 		self.opt.setup(self.model)
@@ -127,13 +128,17 @@ class DeepLearningClassifier:
 if __name__=='__main__':
 	# mnist 使用例
 	# 前処理
-	mnist = fetch_mldata('MNIST original', data_home=".")
-	X = mnist.data
-	y = mnist.target
-	X =X/X.max()
-	X = X.astype(np.float32)
+   #0~9の数字が書いてあるデータセット。教師データ6万枚、検証用データ1万枚にすでに分割されている。
+	mnist = fetch_mldata('MNIST original', data_home=".") 
+	X = mnist.data #画像の黒さ。0~255であらわされている。
+	y = mnist.target #データラベル(正解)、0~9。
+	X =X/X.max() #学習に適応させるために0~1に正規化する
+	X = X.astype(np.float32) #numpyでのキャストを行う。非破壊メソッド。
 	y = y.astype(np.int32)
+    #28*28の画像にreshape.グレースケールなのでチャネルは一つでよい。データ数は6+1の7万枚
 	X =X .reshape(70000,1,28,28)  # 必ず（データの総数, channel数, 縦, 横）の形にしておく
+    #過学習を防ぐためにデータを分割して一部を検証のために使う
+    #検証データの割合をtest_sizeであらわす。
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 	# 定義
